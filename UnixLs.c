@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <grp.h>
-#include <pwd.h>
-#include <sys/types.h>
-#include <string.h> 
+#include "UnixLs.h"
 
 int main(int argc, char**argv){
     printf("The number of arguments are %d\n",argc);
