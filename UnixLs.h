@@ -11,19 +11,19 @@
 #define MAX_LEN 4096 
 
 // Print information of files in the specified directory 
-void listFiles(char* dirName, int* flags, int printDirFlag);
+void listFiles(char* dirName, int* flags, int dirFlag);
 
-// print file info based on path
+// print file info specified on path
 void fileInfo(char* fileName, char* dirName, int* flags, int concatFlag);
 
 // print the r/w/e permission
 void modeInfo(mode_t mode);
 
 // user and file info
-void userInfo(uid_t uid);
+void userInfo(uid_t userid);
 
 // group info
-void groupInfo(gid_t grpNum);
+void groupInfo(gid_t groupNum);
 
 // last modified info
 void timeInfo(time_t time);
