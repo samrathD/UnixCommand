@@ -1,21 +1,48 @@
 #include "UnixLs.h"
 
 int main(int argc, char**argv){
-    printf("The number of arguments are %d\n",argc);
-
-    for(int i = 0; i<argc; i++){
-        printf("The arguments are %d\n",argv[i][0]);
+    int show_i = 0;
+    int show_l = 0;
+    
+    //Parse the command line arguments
+    int opt;
+    //Use getopt a bulit in funciton to parse the command line arguments
+    while ((opt = getopt(argc, argv, "il")) != -1) {
+        switch (opt) {
+            case 'i':
+                printf("Option -i specified, opt: %c\n", opt);
+                show_i = 1;
+                break;
+            case 'l':
+                printf("Option -l specified, opt: %c\n", opt);
+                show_l = 1;
+                break;
+            default:
+                fprintf(stderr, "Usage: %s [-il]\n", argv[0]);
+                return 1;
+        }
     }
 
-    //First extract the proper information
+    //if there are not files passed then show files of current directory
+    if(optind >= argc){
+        printf("There are no files provided\n");
+        listFiles(".", show_i, show_l, 1);
+    }
+    else{
+        for(int i = optind; i<argc; i++){
+            printf("The filename provided is %s\n",argv[i]);
+            listFiles(argv[i],show_i, show_l,1);
+        }
+    }
+    return 0;
 }
 
-void listFiles(char* dirPath, int* opts, int printDir) {
+void listFiles(char* dirPath, int show_i, int show_l,int printDir) {
     int type = fileType(dirPath);
 
     // If directory doesn't exist 
     if (type == -1) {
-        fprintf(stderr, "File not found: %s\n", dirPath);
+        fprintf(stderr, "UnixLs: cannot access '%s': No such file or directory\n", dirPath);
         exit(EXIT_FAILURE);
     }
 
@@ -32,14 +59,13 @@ void listFiles(char* dirPath, int* opts, int printDir) {
 
         //print file names 
         while ((dir = readdir(dirp)) != NULL) {
-            if (dir->d_name[0] == '.') {
-            continue;
+            if (dir->d_name[0] != '.') {
+            fileInfo(dir->d_name, dirPath, show_i, show_l, 1);
             }
-            fileInfo(dir->d_name, dirPath, opts, 1);
         }
 
         // print directory content recursively
-        if (opts[2] == 1) {
+        if (show_l == 1) {
             rewinddir(dirp);
             while ((dir = readdir(dirp)) != NULL) {
             if (dir->d_name[0] == '.') {
@@ -56,7 +82,7 @@ void listFiles(char* dirPath, int* opts, int printDir) {
             }
 
             if(S_ISDIR(fileStat.st_mode)) {
-                listFiles(path, opts, 1);
+                listFiles(path, show_i, show_l, 1);
             }
             }
         }
@@ -67,7 +93,7 @@ void listFiles(char* dirPath, int* opts, int printDir) {
 
     // If the path exists but is not a directory
     else {
-        fileInfo(dirPath, "", opts, 0);
+        fileInfo(dirPath, "", show_i, show_l, 0);
     }
 }
 
@@ -79,8 +105,9 @@ int fileType(char* path) {
     return S_ISDIR(fileStat.st_mode);
 }
 
-void fileInfo(char* fName, char* dirPath, int* opts, int concat) {
+void fileInfo(char* fName, char* dirPath, int show_i, int show_l, int concat) {
     char path[MAX_LEN];
+    //Concatinating the file file name at the end of the file path
     if (concat) {
         memset(path, 0, sizeof(path));
         snprintf(path, sizeof(path), "%s/%s", dirPath, fName);
@@ -95,11 +122,12 @@ void fileInfo(char* fName, char* dirPath, int* opts, int concat) {
         exit(EXIT_FAILURE);
     }
 
-    if (opts[0]) {
+//Change this to show_i
+    if (show_i) {
         printf("%8lu ", fileStat.st_ino);
     }
-
-    if (opts[1]) {
+//Change this to show_l
+    if (show_l) {
         modeInfo(fileStat.st_mode);
         printf("%2lu ", fileStat.st_nlink);
         userInfo(fileStat.st_uid);
@@ -109,8 +137,8 @@ void fileInfo(char* fName, char* dirPath, int* opts, int concat) {
     }
 
     printf("%s", fName);
-
-    if (opts[1]) {
+//Change to show_l
+    if (show_l) {
         if (S_ISLNK(fileStat.st_mode)) {
         char real_path[MAX_LEN];
         memset(real_path, 0, sizeof(real_path));
