@@ -81,10 +81,9 @@ void listFiles(char* dirPath, int show_i, int show_l,int printDir) {
                 exit(EXIT_FAILURE);
             }
 
-            // if(S_ISDIR(fileStat.st_mode)) {
-            //     listFiles(path, show_i, show_l, 1);
-            // }
-            
+            if(S_ISDIR(fileStat.st_mode)) {
+                listFiles(path, show_i, show_l, 1);
+            }
             }
         }
 
@@ -98,21 +97,23 @@ void listFiles(char* dirPath, int show_i, int show_l,int printDir) {
     }
 }
 
+//determines the type of file (directory or not)
 int fileType(char* path) {
     //Stores information about the file file specified by the file path
     struct stat fileStat;
 
     //Return -1 if an error has occured
     if (lstat(path, &fileStat) < 0) {
-        return -1;
+        return -1; // Return -1 if lstat fails
     }
-    //returns 1 if the file is a directory, and 0 if it's not a directory.
-    return S_ISDIR(fileStat.st_mode);
+    return S_ISDIR(fileStat.st_mode); // Return 1 if directory, 0 otherwise
 }
 
+// prints file information
 void fileInfo(char* fName, char* dirPath, int show_i, int show_l, int concat) {
     char path[MAX_LEN];
-    //Concatinating the file file name at the end of the file path
+
+    // concatenating the file name at the end of the file path if concat is true
     if (concat) {
         memset(path, 0, sizeof(path));
         snprintf(path, sizeof(path), "%s/%s", dirPath, fName);
@@ -122,89 +123,139 @@ void fileInfo(char* fName, char* dirPath, int show_i, int show_l, int concat) {
 
     struct stat fileStat;
 
+    // getting file information using lstat
     if (lstat(path, &fileStat) < 0) {
         fprintf(stderr, "File not found: %s\n", path);
         exit(EXIT_FAILURE);
     }
 
-//Change this to show_i
+    // printing inode number if show_i is true
     if (show_i) {
         printf("%8lu ", fileStat.st_ino);
     }
-//Change this to show_l
+
+    // printing detailed file information if show_l is true
     if (show_l) {
-        modeInfo(fileStat.st_mode);
-        printf("%2lu ", fileStat.st_nlink);
-        userInfo(fileStat.st_uid);
-        groupInfo(fileStat.st_gid);
-        printf("%6ld ", fileStat.st_size);
-        timeInfo(fileStat.st_mtime);
+        modeInfo(fileStat.st_mode); //print file permissions
+        printf("%2lu ", fileStat.st_nlink); //print number of hard links
+        userInfo(fileStat.st_uid); //print user information
+        groupInfo(fileStat.st_gid); //print group information
+        printf("%6ld ", fileStat.st_size); //print file size
+        timeInfo(fileStat.st_mtime); //print last modification time
     }
 
-    printf("%s", fName);
-//Change to show_l
+    printf("%s", fName); // print file name
+
+    // print symbolic link target if file is a symbolic link and show_l is true
     if (show_l) {
         if (S_ISLNK(fileStat.st_mode)) {
-        char real_path[MAX_LEN];
-        memset(real_path, 0, sizeof(real_path));
+            char real_path[MAX_LEN];
+            memset(real_path, 0, sizeof(real_path));
 
-        if (readlink(path, real_path, sizeof(real_path) - 1) < 0) {
-            fprintf(stderr, "readlink failed for: %s\n", path);
-            exit(EXIT_FAILURE);
-        }
+            // get the target of the symbolic link
+            if (readlink(path, real_path, sizeof(real_path) - 1) < 0) {
+                fprintf(stderr, "readlink failed for: %s\n", path);
+                exit(EXIT_FAILURE);
+            }
 
-        printf(" -> %s", real_path);
+            printf(" -> %s", real_path); // print the symbolic link target
         }
     }
 
-    printf("\n");
+    printf("\n"); // print a newline after each file
 }
 
-void modeInfo(mode_t mode) {
-    if (S_ISDIR(mode)) {
-        printf("d");
-    } else if (S_ISLNK(mode)) {
-        printf("l");
-    } else {
-        printf("-");
+// list files in a directory
+void listFiles(char* dirPath, int show_i, int show_l, int printDir) {
+    int type = fileType(dirPath); // determine the type of file
+
+    // ff directory doesn't exist: 
+    if (type == -1) {
+        fprintf(stderr, "UnixLs: cannot access '%s': No such file or directory\n", dirPath);
+        exit(EXIT_FAILURE);
     }
-    printf((mode & S_IRUSR) ? "r" : "-");
-    printf((mode & S_IWUSR) ? "w" : "-");
-    printf((mode & S_IXUSR) ? "x" : "-");
-    printf((mode & S_IRGRP) ? "r" : "-");
-    printf((mode & S_IWGRP) ? "w" : "-");
-    printf((mode & S_IXGRP) ? "x" : "-");
-    printf((mode & S_IROTH) ? "r" : "-");
-    printf((mode & S_IWOTH) ? "w" : "-");
-    printf((mode & S_IXOTH) ? "x" : "-");
-    printf(" ");
+
+    // if the path is a directory:
+    else if (type == 1) {
+        DIR *dirp = opendir(dirPath); // Open the directory
+        struct dirent *dir;
+
+        if (dirp != NULL) {
+            // print directory name 
+            if (printDir) {
+                printf("\n%s:\n", dirPath);
+            }
+
+            // print file names 
+            while ((dir = readdir(dirp)) != NULL) {
+                if (dir->d_name[0] != '.') {
+                    fileInfo(dir->d_name, dirPath, show_i, show_l, 1);
+                }
+            }
+
+            // print directory contents recursively if show_l is true
+            if (show_l == 1) {
+                rewinddir(dirp);
+                while ((dir = readdir(dirp)) != NULL) {
+                    if (dir->d_name[0] == '.') {
+                        continue;
+                    }
+                    struct stat fileStat;
+                    char path[MAX_LEN];
+                    memset(path, 0, sizeof(path));
+                    snprintf(path, sizeof(path), "%s/%s", dirPath, dir->d_name);
+
+                    // get file information using lstat
+                    if (lstat(path, &fileStat) < 0) {
+                        fprintf(stderr, "lstat failed for: %s\n", path);
+                        exit(EXIT_FAILURE);
+                    }
+
+                    // if the file is a directory, list its contents recursively
+                    // if(S_ISDIR(fileStat.st_mode)) {
+                    //     listFiles(path, show_i, show_l, 1);
+                    // }
+                }
+            }
+
+            closedir(dirp); // close the directory
+        }
+    }
+
+    //if the path exists but is not a directory
+    else {
+        fileInfo(dirPath, "", show_i, show_l, 0);
+    }
 }
 
+//retrieve and print user information based on user ID
 void userInfo(uid_t userid) {
     struct passwd *pw = NULL;
-    pw = getpwuid(userid);
+    pw = getpwuid(userid); //get user information based on user ID
 
     if (pw) {
-        printf("%8s ", pw->pw_name);
+        printf("%8s ", pw->pw_name); // print username
     } else {
-        printf("Unknown user %u\n", userid);
+        printf("Unknown user %u\n", userid); //error message if user not found
     }
 }
 
+//retrieve and print group information based on group number
 void groupInfo(gid_t groupNum) {
     struct group *grp;
-    grp = getgrgid(groupNum);
+    grp = getgrgid(groupNum); // get group information based on group number
 
     if (grp) {
-        printf("%6s ", grp->gr_name);
+        printf("%6s ", grp->gr_name); //print group name
     } else {
-        printf("Unknown group %u\n", groupNum);
+        printf("Unknown group %u\n", groupNum); //error message if group not found
     }
 }
 
+//retrieve and print time information
 void timeInfo(time_t time) {
     struct tm *timeinfo;
-    timeinfo = localtime (&time);
+    timeinfo = localtime(&time); //convert time to local time representation
 
     switch (timeinfo->tm_mon) {
         case 0: printf("Jan "); break;
@@ -219,30 +270,32 @@ void timeInfo(time_t time) {
         case 9: printf("Oct "); break;
         case 10: printf("Nov "); break;
         case 11: printf("Dec "); break;
-        default: printf("Error"); break;
+        default: printf("Error"); break; //error message if month is out of range
     }
 
-    printf("%2d ", timeinfo->tm_mday);
-    printf("%d ", timeinfo->tm_year + 1900);
-    printf("%02d:%02d ", timeinfo->tm_hour, timeinfo->tm_min);
+    printf("%2d ", timeinfo->tm_mday); // Print day
+    printf("%d ", timeinfo->tm_year + 1900); // print year
+    printf("%02d:%02d ", timeinfo->tm_hour, timeinfo->tm_min); //print hour and minute
 }
 
-void setFlags(char* input, int* opts) {
+//set flags based on user input
+void setFlags(char *input, int *opts) {
     int flag_pos = 1;
     while (1) {
         if (input[flag_pos] == 'i') {
-        opts[0] = 1;
+            opts[0] = 1; // Set 'i' flag
         } else if (input[flag_pos] == 'l') {
-        opts[1] = 1;
+            opts[1] = 1; // Set 'l' flag
         } else if (input[flag_pos] == 'R') {
-        opts[2] = 1;
+            opts[2] = 1; // Set 'R' flag
         } else {
-        if (input[flag_pos] != '\0' || flag_pos == 1) {
-            fprintf(stderr, "Illegal option: %s\n", input);
-            fprintf(stderr, "Usage: ./UnixLs [-ilR] [file ...]\n");
-            exit(EXIT_FAILURE);
-        }
-        break;
+            // If an illegal option is detected or no options are provided
+            if (input[flag_pos] != '\0' || flag_pos == 1) {
+                fprintf(stderr, "Illegal option: %s\n", input);
+                fprintf(stderr, "Usage: ./UnixLs [-ilR] [file ...]\n"); // print usage message
+                exit(EXIT_FAILURE); // Exit fail
+            }
+            break;
         }
         flag_pos++;
     }
