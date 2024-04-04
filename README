@@ -6,3 +6,12 @@ Samrath Dhillon
 Martin Zukowski
 ## Answers to VM questions
 
+1: 
+    Virtual Address (hex): 11123456 
+    Convert to bits: 0001 0001 0001 0010 0011 0100 0101 0110
+    Page size is 2^12 bytes and page table size is 2^20 bytes
+    The low order 12 bits is the offset into the page
+    while the other 20 bits are the offset used in the page table.
+    page offset: 0100 0101 0110 
+    page table offset: 0001 0001 0001 0010 0011
+    The page table entry will provide a 6 bit frame number, then the 12 bit offset will be appended to it to get the physical location. All of this is completed in the hardware. 
