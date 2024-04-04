@@ -23,7 +23,7 @@ int main(int argc, char**argv){
         }
     }
 
-    //if there are not files passed then show files of current directory
+    //if there are no files passed then show files of current directory
     if(optind >= argc){
         printf("There are no files provided\n");
         listFiles(".", show_i, show_l, 1);
@@ -81,9 +81,10 @@ void listFiles(char* dirPath, int show_i, int show_l,int printDir) {
                 exit(EXIT_FAILURE);
             }
 
-            if(S_ISDIR(fileStat.st_mode)) {
-                listFiles(path, show_i, show_l, 1);
-            }
+            // if(S_ISDIR(fileStat.st_mode)) {
+            //     listFiles(path, show_i, show_l, 1);
+            // }
+            
             }
         }
 
@@ -98,10 +99,14 @@ void listFiles(char* dirPath, int show_i, int show_l,int printDir) {
 }
 
 int fileType(char* path) {
+    //Stores information about the file file specified by the file path
     struct stat fileStat;
+
+    //Return -1 if an error has occured
     if (lstat(path, &fileStat) < 0) {
         return -1;
     }
+    //returns 1 if the file is a directory, and 0 if it's not a directory.
     return S_ISDIR(fileStat.st_mode);
 }
 
