@@ -37,65 +37,69 @@ int main(int argc, char**argv){
     return 0;
 }
 
-void listFiles(char* dirPath, int show_i, int show_l,int printDir) {
-    int type = fileType(dirPath);
+// list files in a directory
+void listFiles(char* dirPath, int show_i, int show_l, int printDir) {
+    int type = fileType(dirPath); // determine the type of file
 
-    // If directory doesn't exist 
+    // ff directory doesn't exist: 
     if (type == -1) {
         fprintf(stderr, "UnixLs: cannot access '%s': No such file or directory\n", dirPath);
         exit(EXIT_FAILURE);
     }
 
-    // If the path is a directory 
+    // if the path is a directory:
     else if (type == 1) {
-        DIR *dirp = opendir(dirPath);
+        DIR *dirp = opendir(dirPath); // Open the directory
         struct dirent *dir;
 
         if (dirp != NULL) {
-        // Print directory name 
-        if (printDir) {
-            printf("\n%s:\n", dirPath);
-        }
-
-        //print file names 
-        while ((dir = readdir(dirp)) != NULL) {
-            if (dir->d_name[0] != '.') {
-            fileInfo(dir->d_name, dirPath, show_i, show_l, 1);
+            // print directory name 
+            if (printDir) {
+                printf("\n%s:\n", dirPath);
             }
-        }
 
-        // print directory content recursively
-        if (show_l == 1) {
-            rewinddir(dirp);
+            // print file names 
             while ((dir = readdir(dirp)) != NULL) {
-            if (dir->d_name[0] == '.') {
-                continue;
-            }
-            struct stat fileStat;
-            char path[MAX_LEN];
-            memset(path, 0, sizeof(path));
-            snprintf(path, sizeof(path), "%s/%s", dirPath, dir->d_name);
-
-            if (lstat(path, &fileStat) < 0) {
-                fprintf(stderr, "lstat failed for: %s\n", path);
-                exit(EXIT_FAILURE);
+                if (dir->d_name[0] != '.') {
+                    fileInfo(dir->d_name, dirPath, show_i, show_l, 1);
+                }
             }
 
-            if(S_ISDIR(fileStat.st_mode)) {
-                listFiles(path, show_i, show_l, 1);
-            }
-            }
-        }
+            // print directory contents recursively if show_l is true
+            if (show_l == 1) {
+                rewinddir(dirp);
+                while ((dir = readdir(dirp)) != NULL) {
+                    if (dir->d_name[0] == '.') {
+                        continue;
+                    }
+                    struct stat fileStat;
+                    char path[MAX_LEN];
+                    memset(path, 0, sizeof(path));
+                    snprintf(path, sizeof(path), "%s/%s", dirPath, dir->d_name);
 
-        closedir(dirp);
+                    // get file information using lstat
+                    if (lstat(path, &fileStat) < 0) {
+                        fprintf(stderr, "lstat failed for: %s\n", path);
+                        exit(EXIT_FAILURE);
+                    }
+
+                    // if the file is a directory, list its contents recursively
+                    // if(S_ISDIR(fileStat.st_mode)) {
+                    //     listFiles(path, show_i, show_l, 1);
+                    // }
+                }
+            }
+
+            closedir(dirp); // close the directory
         }
     }
 
-    // If the path exists but is not a directory
+    //if the path exists but is not a directory
     else {
         fileInfo(dirPath, "", show_i, show_l, 0);
     }
 }
+
 
 //determines the type of file (directory or not)
 int fileType(char* path) {
@@ -165,67 +169,24 @@ void fileInfo(char* fName, char* dirPath, int show_i, int show_l, int concat) {
     printf("\n"); // print a newline after each file
 }
 
-// list files in a directory
-void listFiles(char* dirPath, int show_i, int show_l, int printDir) {
-    int type = fileType(dirPath); // determine the type of file
-
-    // ff directory doesn't exist: 
-    if (type == -1) {
-        fprintf(stderr, "UnixLs: cannot access '%s': No such file or directory\n", dirPath);
-        exit(EXIT_FAILURE);
+void modeInfo(mode_t mode) {
+    if (S_ISDIR(mode)) {
+        printf("d");
+    } else if (S_ISLNK(mode)) {
+        printf("l");
+    } else {
+        printf("-");
     }
-
-    // if the path is a directory:
-    else if (type == 1) {
-        DIR *dirp = opendir(dirPath); // Open the directory
-        struct dirent *dir;
-
-        if (dirp != NULL) {
-            // print directory name 
-            if (printDir) {
-                printf("\n%s:\n", dirPath);
-            }
-
-            // print file names 
-            while ((dir = readdir(dirp)) != NULL) {
-                if (dir->d_name[0] != '.') {
-                    fileInfo(dir->d_name, dirPath, show_i, show_l, 1);
-                }
-            }
-
-            // print directory contents recursively if show_l is true
-            if (show_l == 1) {
-                rewinddir(dirp);
-                while ((dir = readdir(dirp)) != NULL) {
-                    if (dir->d_name[0] == '.') {
-                        continue;
-                    }
-                    struct stat fileStat;
-                    char path[MAX_LEN];
-                    memset(path, 0, sizeof(path));
-                    snprintf(path, sizeof(path), "%s/%s", dirPath, dir->d_name);
-
-                    // get file information using lstat
-                    if (lstat(path, &fileStat) < 0) {
-                        fprintf(stderr, "lstat failed for: %s\n", path);
-                        exit(EXIT_FAILURE);
-                    }
-
-                    // if the file is a directory, list its contents recursively
-                    // if(S_ISDIR(fileStat.st_mode)) {
-                    //     listFiles(path, show_i, show_l, 1);
-                    // }
-                }
-            }
-
-            closedir(dirp); // close the directory
-        }
-    }
-
-    //if the path exists but is not a directory
-    else {
-        fileInfo(dirPath, "", show_i, show_l, 0);
-    }
+    printf((mode & S_IRUSR) ? "r" : "-");
+    printf((mode & S_IWUSR) ? "w" : "-");
+    printf((mode & S_IXUSR) ? "x" : "-");
+    printf((mode & S_IRGRP) ? "r" : "-");
+    printf((mode & S_IWGRP) ? "w" : "-");
+    printf((mode & S_IXGRP) ? "x" : "-");
+    printf((mode & S_IROTH) ? "r" : "-");
+    printf((mode & S_IWOTH) ? "w" : "-");
+    printf((mode & S_IXOTH) ? "x" : "-");
+    printf(" ");
 }
 
 //retrieve and print user information based on user ID
