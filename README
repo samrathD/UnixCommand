@@ -15,3 +15,19 @@ Martin Zukowski
     page offset: 0100 0101 0110 
     page table offset: 0001 0001 0001 0010 0011
     The page table entry will provide a 6 bit frame number, then the 12 bit offset will be appended to it to get the physical location. All of this is completed in the hardware. 
+
+2:
+    Time to service page fault (TS): 8 milliseconds
+    Time to modify the replaced page (TM): 20 milliseconds
+    Memory Access Time (MAT): 100 nanoseconds
+    Page replacement modification time percentage (PR): 70% = 0.7
+    Effective Access Time: 200 nanoseconds
+
+    Effective Access Time = (1-p) x MAT + p x (PR x TM + (1-PR)TS)
+    p = page fault rate
+
+    200 nanoseconds = (1-p) x 100 nanoseconds + p x (0.7 x 20 milliseconds + 0.3 x 8 milliseconds)
+    200 = (1-p)100 + p(14000000 + 2400000)
+    200 = 100 - 100p + 16400000p
+    100 = 16399900p
+    p = 0.00000609
