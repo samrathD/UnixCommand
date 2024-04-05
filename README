@@ -27,7 +27,7 @@ Martin Zukowski
     p = page fault rate
 
     200 nanoseconds = (1-p) x 100 nanoseconds + p x (0.7 x 20 milliseconds + 0.3 x 8 milliseconds)
-    200 = (1-p)100 + p(14000000 + 2400000)
+    200 = (1-p)100 + p(14000000 + 2400000)   //all in nanoseconds now
     200 = 100 - 100p + 16400000p
     100 = 16399900p
     p = 0.00000609
