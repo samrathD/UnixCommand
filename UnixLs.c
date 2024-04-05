@@ -10,11 +10,9 @@ int main(int argc, char**argv){
     while ((opt = getopt(argc, argv, "il")) != -1) {
         switch (opt) {
             case 'i':
-                printf("Option -i specified, opt: %c\n", opt);
                 show_i = 1;
                 break;
             case 'l':
-                printf("Option -l specified, opt: %c\n", opt);
                 show_l = 1;
                 break;
             default:
@@ -25,12 +23,10 @@ int main(int argc, char**argv){
 
     //if there are no files passed then show files of current directory
     if(optind >= argc){
-        printf("There are no files provided\n");
         listFiles(".", show_i, show_l, 1);
     }
     else{
         for(int i = optind; i<argc; i++){
-            printf("The filename provided is %s\n",argv[i]);
             listFiles(argv[i],show_i, show_l,1);
         }
     }
@@ -41,7 +37,7 @@ int main(int argc, char**argv){
 void listFiles(char* dirPath, int show_i, int show_l, int printDir) {
     int type = fileType(dirPath); // determine the type of file
 
-    // ff directory doesn't exist: 
+    // if directory doesn't exist: 
     if (type == -1) {
         fprintf(stderr, "UnixLs: cannot access '%s': No such file or directory\n", dirPath);
         exit(EXIT_FAILURE);
@@ -65,7 +61,7 @@ void listFiles(char* dirPath, int show_i, int show_l, int printDir) {
                 }
             }
 
-            // print directory contents recursively if show_l is true
+            // print directory contents if show_l is true
             if (show_l == 1) {
                 rewinddir(dirp);
                 while ((dir = readdir(dirp)) != NULL) {
@@ -110,6 +106,7 @@ int fileType(char* path) {
     if (lstat(path, &fileStat) < 0) {
         return -1; // Return -1 if lstat fails
     }
+    //S_ISDIR checks if directory or not
     return S_ISDIR(fileStat.st_mode); // Return 1 if directory, 0 otherwise
 }
 

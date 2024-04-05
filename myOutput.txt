@@ -1,0 +1,88 @@
+% ./UnixLs -i
+    .:
+    2849373922 infodemo.c
+    4333891344 makefile
+    4333465655 UnixLs.c
+    4306897557 README
+    4306905838 UnixLs.h
+    4308872919 UnixLs
+    4308975588 myOutput.txt
+
+% ./UnixLs -l
+    .:
+    -rw-------  1   sda160 cmpt-csil-users    955 Mar 31 2024 22:13 infodemo.c
+    -rw-------  1   sda160 cmpt-csil-users     87 Mar 31 2024 22:25 makefile
+    -rw-------  1   sda160 cmpt-csil-users   8229 Apr  4 2024 17:37 UnixLs.c
+    -rw-------  1   sda160 cmpt-csil-users   1260 Apr  4 2024 17:33 README
+    -rw-------  1   sda160 cmpt-csil-users    802 Apr  4 2024 17:33 UnixLs.h
+    -rwx------  1   sda160 cmpt-csil-users  23936 Apr  4 2024 17:39 UnixLs
+    -rw-------  1   sda160 cmpt-csil-users    203 Apr  4 2024 17:44 myOutput.txt
+
+% ./UnixLs -li . .. ~
+    .:
+    2849373922 -rw-------  1   sda160 cmpt-csil-users    955 Mar 31 2024 22:13 infodemo.c
+    4333891344 -rw-------  1   sda160 cmpt-csil-users     87 Mar 31 2024 22:25 makefile
+    4333465655 -rw-------  1   sda160 cmpt-csil-users   8229 Apr  4 2024 17:37 UnixLs.c
+    4306897557 -rw-------  1   sda160 cmpt-csil-users   1260 Apr  4 2024 17:33 README
+    4306905838 -rw-------  1   sda160 cmpt-csil-users    802 Apr  4 2024 17:33 UnixLs.h
+    4308872919 -rwx------  1   sda160 cmpt-csil-users  23936 Apr  4 2024 17:39 UnixLs
+    4308975588 -rw-------  1   sda160 cmpt-csil-users    766 Apr  4 2024 17:44 myOutput.txt
+
+    ..:
+    4298962621 drwxr-xr-x  3   sda160 cmpt-csil-users    127 Jan 31 2024 20:44 Assignment1
+    3207888424 -rw-r--r--  1   sda160 cmpt-csil-users  20132 Jan 30 2024 19:33 Assignment1.zip
+    777383260 drwxr-xr-x  4   sda160 cmpt-csil-users   4096 Feb 27 2024 14:30 Assignment2
+    6810465150 drwx------  2   sda160 cmpt-csil-users      6 Mar 15 2024 09:44 Assignment3__
+    6818485904 drwx------  4   sda160 cmpt-csil-users    200 Mar 25 2024 22:42 Assignment3
+    4333531062 drwx------  3   sda160 cmpt-csil-users    168 Apr  4 2024 17:41 UnixCommand_Assignment4
+
+    /home/sda160:
+    604947 drwx------  2   sda160 domain users      0 Jan 20 2024 13:54 sfuhome
+    4348501071 lrwxrwxrwx  1   sda160 cmpt-csil-users     39 Jan 12 2023 10:33 Android -> /usr/shared/CMPT/scratch/sda160/Android
+    4348501074 lrwxrwxrwx  1   sda160 cmpt-csil-users     42 Jan 12 2023 10:33 VirtualBox VMs -> /usr/shared/CMPT/scratch/sda160/VirtualBox
+    2274590563 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Desktop
+    4348501105 drwxr-xr-x  9   sda160 cmpt-csil-users   4096 Jan 14 2024 19:40 Downloads
+    6652998129 drwxr-xr-x  2   sda160 cmpt-csil-users    269 Sep  5 2023 14:43 Templates
+    382855426 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Public
+    2274590566 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Documents
+    4348501106 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Music
+    6652998131 drwxr-xr-x  2   sda160 cmpt-csil-users     61 Sep 19 2023 13:28 Pictures
+    382855427 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Videos
+    4350548968 drwx------  2   sda160 cmpt-csil-users     10 Feb 27 2024 23:53 snap
+    4364111641 drwxr-xr-x  2   sda160 cmpt-csil-users   4096 Jan 27 2023 19:30 Assignment
+    5346580220 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Sep 11 2023 18:23 tsclient
+    2791693889 drwxr-xr-x  5   sda160 cmpt-csil-users    125 Sep 12 2023 13:25 C-Lab-1
+    4447263003 drwxr-xr-x  2   sda160 cmpt-csil-users     64 Oct 25 2023 19:03 META-INF
+    7564184425 drwxr-xr-x  3   sda160 cmpt-csil-users   4096 Oct 25 2023 19:03 venus
+    3207838996 drwxr-xr-x  9   sda160 cmpt-csil-users    193 Oct 25 2023 19:04 venusbackend
+    3135413664 drwxr-xr-x  4   sda160 cmpt-csil-users     70 Nov 14 2023 15:37 vscode-cpptools
+
+% ./UnixLs -i -l .. ~
+    ..:
+    4298962621 drwxr-xr-x  3   sda160 cmpt-csil-users    127 Jan 31 2024 20:44 Assignment1
+    3207888424 -rw-r--r--  1   sda160 cmpt-csil-users  20132 Jan 30 2024 19:33 Assignment1.zip
+    777383260 drwxr-xr-x  4   sda160 cmpt-csil-users   4096 Feb 27 2024 14:30 Assignment2
+    6810465150 drwx------  2   sda160 cmpt-csil-users      6 Mar 15 2024 09:44 Assignment3__
+    6818485904 drwx------  4   sda160 cmpt-csil-users    200 Mar 25 2024 22:42 Assignment3
+    4333531062 drwx------  3   sda160 cmpt-csil-users    168 Apr  4 2024 17:41 UnixCommand_Assignment4
+
+    /home/sda160:
+    604947 drwx------  2   sda160 domain users      0 Jan 20 2024 13:54 sfuhome
+    4348501071 lrwxrwxrwx  1   sda160 cmpt-csil-users     39 Jan 12 2023 10:33 Android -> /usr/shared/CMPT/scratch/sda160/Android
+    4348501074 lrwxrwxrwx  1   sda160 cmpt-csil-users     42 Jan 12 2023 10:33 VirtualBox VMs -> /usr/shared/CMPT/scratch/sda160/VirtualBox
+    2274590563 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Desktop
+    4348501105 drwxr-xr-x  9   sda160 cmpt-csil-users   4096 Jan 14 2024 19:40 Downloads
+    6652998129 drwxr-xr-x  2   sda160 cmpt-csil-users    269 Sep  5 2023 14:43 Templates
+    382855426 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Public
+    2274590566 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Documents
+    4348501106 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Music
+    6652998131 drwxr-xr-x  2   sda160 cmpt-csil-users     61 Sep 19 2023 13:28 Pictures
+    382855427 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Jan 12 2023 10:33 Videos
+    4350548968 drwx------  2   sda160 cmpt-csil-users     10 Feb 27 2024 23:53 snap
+    4364111641 drwxr-xr-x  2   sda160 cmpt-csil-users   4096 Jan 27 2023 19:30 Assignment
+    5346580220 drwxr-xr-x  2   sda160 cmpt-csil-users     10 Sep 11 2023 18:23 tsclient
+    2791693889 drwxr-xr-x  5   sda160 cmpt-csil-users    125 Sep 12 2023 13:25 C-Lab-1
+    4447263003 drwxr-xr-x  2   sda160 cmpt-csil-users     64 Oct 25 2023 19:03 META-INF
+    7564184425 drwxr-xr-x  3   sda160 cmpt-csil-users   4096 Oct 25 2023 19:03 venus
+    3207838996 drwxr-xr-x  9   sda160 cmpt-csil-users    193 Oct 25 2023 19:04 venusbackend
+    3135413664 drwxr-xr-x  4   sda160 cmpt-csil-users     70 Nov 14 2023 15:37 vscode-cpptools
