@@ -35,7 +35,7 @@ int main(int argc, char**argv){
 
 // list files in a directory
 void listFiles(char* dirPath, int show_i, int show_l, int printDir) {
-    int type = fileType(dirPath); // determine the type of file
+    int type = fileType(dirPath); // determine the type of file directory or not
 
     // if directory doesn't exist: 
     if (type == -1) {
@@ -47,7 +47,6 @@ void listFiles(char* dirPath, int show_i, int show_l, int printDir) {
     else if (type == 1) {
         DIR *dirp = opendir(dirPath); // Open the directory
         struct dirent *dir;
-
         if (dirp != NULL) {
             // print directory name 
             if (printDir) {
@@ -60,32 +59,6 @@ void listFiles(char* dirPath, int show_i, int show_l, int printDir) {
                     fileInfo(dir->d_name, dirPath, show_i, show_l, 1);
                 }
             }
-
-            // print directory contents if show_l is true
-            if (show_l == 1) {
-                rewinddir(dirp);
-                while ((dir = readdir(dirp)) != NULL) {
-                    if (dir->d_name[0] == '.') {
-                        continue;
-                    }
-                    struct stat fileStat;
-                    char path[MAX_LEN];
-                    memset(path, 0, sizeof(path));
-                    snprintf(path, sizeof(path), "%s/%s", dirPath, dir->d_name);
-
-                    // get file information using lstat
-                    if (lstat(path, &fileStat) < 0) {
-                        fprintf(stderr, "lstat failed for: %s\n", path);
-                        exit(EXIT_FAILURE);
-                    }
-
-                    // if the file is a directory, list its contents recursively
-                    // if(S_ISDIR(fileStat.st_mode)) {
-                    //     listFiles(path, show_i, show_l, 1);
-                    // }
-                }
-            }
-
             closedir(dirp); // close the directory
         }
     }
